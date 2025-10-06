@@ -5,19 +5,21 @@
   <title>QR Check-In</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
   <style>
-    #reader { width: 300px; height: 300px; margin: 20px auto; }
-    #result { text-align: center; font-size: 18px; margin-top: 10px; }
-    body { font-family: Arial; }
-    h2 { text-align: center; }
+    body { font-family: Arial; text-align: center; margin: 0; padding: 20px; }
+    #reader { width: 300px; height: 300px; margin: 0 auto; }
+    #result { font-size: 18px; margin-top: 15px; }
+    h2 { margin-bottom: 10px; }
+    .note { font-size: 14px; color: #666; margin-top: 10px; }
   </style>
 </head>
 <body>
   <h2>QR Check-In</h2>
   <div id="reader"></div>
-  <div id="result">Scan a QR code</div>
+  <div id="result">Scan a QR code using Chrome browser</div>
+  <div class="note">⚠️ Do not open in Gmail, WhatsApp, or Opera. Use Chrome or Firefox.</div>
 
   <script>
-    const API_URL = "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE"; // вставь URL doPost
+    const API_URL = "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE"; // ← вставь URL doPost
 
     function startScanner() {
       const html5QrcodeScanner = new Html5Qrcode("reader");
@@ -33,13 +35,14 @@
             .then(response => response.text())
             .then(msg => {
               document.getElementById('result').innerHTML = msg;
-              setTimeout(startScanner, 2000); // перезапуск сканера
+              setTimeout(startScanner, 2000); // перезапуск сканера через 2 сек
             })
             .catch(err => {
               document.getElementById('result').innerHTML = "❌ Error: " + err;
+              setTimeout(startScanner, 3000); // перезапуск сканера через 3 сек
             });
         },
-        errorMessage => {}
+        errorMessage => {} // можно игнорировать мелкие ошибки сканера
       ).catch(err => {
         document.getElementById('result').innerHTML = "❌ Cannot start camera: " + err;
       });
@@ -49,3 +52,4 @@
   </script>
 </body>
 </html>
+
