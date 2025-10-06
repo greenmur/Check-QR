@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>QR Check-In</title>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
+  <style>
+    #reader { width: 300px; height: 300px; margin: 20px auto; }
+    #result { text-align: center; font-size: 18px; margin-top: 10px; }
+    body { font-family: Arial; }
+    h2 { text-align: center; }
+  </style>
+</head>
+<body>
+  <h2>QR Check-In</h2>
+  <div id="reader"></div>
+  <div id="result">Scan a QR code</div>
+
+  <script>
+    const API_URL = "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE"; // вставь URL doPost
+
+    function startScanner() {
+      const html5QrcodeScanner = new Html5Qrcode("reader");
+
+      html5QrcodeScanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        decodedText => {
+          html5QrcodeScanner.clear();
+
+          // отправка кода в Apps Script
+          fetch(API_URL + "?code=" + encodeURIComponent(decodedText))
+            .then(response => response.text())
+            .then(msg => {
+              document.getElementById('result').innerHTML = msg;
+              setTimeout(startScanner, 2000); // перезапуск сканера
+            })
+            .catch(err => {
+              document.getElementById('result').innerHTML = "❌ Error: " + err;
+            });
+        },
+        errorMessage => {}
+      ).catch(err => {
+        document.getElementById('result').innerHTML = "❌ Cannot start camera: " + err;
+      });
+    }
+
+    startScanner();
+  </script>
+</body>
+</html>
